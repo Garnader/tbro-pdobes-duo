@@ -2,44 +2,36 @@ import logo from "./logo.svg";
 import "./App.css";
 import { db } from "./firebaseConfig";
 import { doc, setDoc, Timestamp } from "firebase/firestore";
+import { useState } from "react";
 
-function App() {
-  const test = async () => {
-    const docData = {
-      stringExample: "Hello world!",
-      booleanExample: true,
-      numberExample: 3.14159265,
-      dateExample: Timestamp.fromDate(new Date("December 10, 1815")),
-      arrayExample: [5, true, "hello"],
-      nullExample: null,
-      objectExample: {
-        a: 5,
-        b: {
-          nested: "foo",
-        },
-      },
-    };
-    await setDoc(doc(db, "data", "one"), docData);
+const App = () => {
+  const [firstName, setFirstName] = useState("Terrance");
+  const [lastName, setLastName] = useState("McKenna");
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    await setDoc(doc(db, "users", firstName), {
+      firstName: firstName,
+      lastName: lastName,
+    });
+
+    console.log("Document writted with ID: ", firstName);
   };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <button onClick={() => test()}>Click me</button>
-      </header>
-    </div>
+    <form>
+      <div>
+        <label> First Name: </label>
+        <input onChange={(event) => setFirstName(event.target.value)} />
+      </div>
+      <div>
+        <label> Last Name: </label>
+        <input onChange={(event) => setLastName(event.target.value)} />
+      </div>
+
+      <button onClick={(event) => handleSubmit(event)}> Submit to DB</button>
+    </form>
   );
-}
+};
 
 export default App;
